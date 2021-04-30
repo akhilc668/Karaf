@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Dictionary;
+import java.util.Scanner;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -34,34 +35,36 @@ import org.osgi.service.component.annotations.Reference;
 
 public class Activator implements BundleActivator {
 
-	@Reference(target = "(osgi.jndi.service.name=jdbc/mysql1)")
-	private DataSource dataSource;
 
 	public void start(BundleContext context) throws Exception {
 		System.out.println("Starting the bundle");
-		data();
-	}
-
-	public void data() throws Exception {
-		Context initCtx = new InitialContext();
-		Context envCtx = (Context) initCtx.lookup("osgi:service");
-
-		// Look up our data source
-		DataSource ds = (DataSource)
-		  envCtx.lookup("jdbc/mysql1");
 		
-		try {
-			Connection con=ds.getConnection();
-			PreparedStatement ps=con.prepareStatement("select * from entitysample");
-			ResultSet rs=ps.executeQuery();
-			while(rs.next()) {
-				System.out.println(rs.getInt(1)+" "+rs.getString(2));
+		Scanner sc = new Scanner(System.in);
+		String con="";
+		do {
+			System.out.println("1.Insert 2.Display 3.Update 4.Delete");
+			System.out.println("enter your choice:");
+			int choice = sc.nextInt();
+			System.out.println(choice);
+			switch (choice) {
+			case 1:
+				Insertion.insert();
+				break;
+			case 2:
+				Selection.select();
+				break;
+			case 3:
+				Updation.update();
+				break;
+			case 4:
+				Deletion.delete();
+				break;
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			System.out.println("do you want to continue Y/N");
+			con=sc.next();
+		} while (con.equalsIgnoreCase("Y"));
 	}
+
 	public void stop(BundleContext context) {
 		System.out.println("Stopping the bundle");
 	}
